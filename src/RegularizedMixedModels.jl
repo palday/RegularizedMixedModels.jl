@@ -1,16 +1,29 @@
 module RegularizedMixedModels
 
+using Base: Ryu
+
 using LinearAlgebra
+using GLM
 using MixedModels
 using NLopt
 using Random
+using StatsAPI
+using StatsBase
+using Statistics
 using ProgressMeter
 
 using LinearAlgebra: BlasFloat, BlasReal, HermOrSym, PosDefException, copytri!
 using NLopt: Opt
-import StatsBase: fit, fit!
+using StatsBase: fit, fit!
 
-export RegularizedMixedModel, RegularizedLinearMixedModel
+using MixedModels: nθ, nlevs
+
+
+export RegularizedMixedModel,
+       RegularizedLinearMixedModel,
+       Ridge,
+       Lasso,
+       ElasticNet
 
 # things from MixedModels.jl
 
@@ -121,7 +134,9 @@ export @formula,
 """
     RegularizedMixedModel
 """
-abstract type RegularizedMixedModel{T} <: RegularizedMixedModel{T} end # model with fixed and random effects
+abstract type RegularizedMixedModel{T} <: MixedModel{T} end # model with fixed and random effects
 
+include("rlmm.jl")
+include("delegations.jl")
 
 end # module
