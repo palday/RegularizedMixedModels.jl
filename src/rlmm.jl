@@ -7,6 +7,12 @@ struct RegularizedLinearMixedModel{T<:AbstractFloat} <: RegularizedMixedModel{T}
     penalty::Vector
     k::Vector{T}
     optsum::OptSummary{T}
+    # β::Vector{T}
+    # β₀::Vector{T}
+    # θ::Vector{T}
+    # b::Vector{Matrix{T}}
+    # u::Vector{Matrix{T}}
+    # u₀::Vector{Matrix{T}}
 end
 
 const Ridge = Function[Base.Fix2(norm, 2)]
@@ -32,6 +38,13 @@ function StatsAPI.fit(::Type{RegularizedMixedModel}, f::FormulaTerm, args...;
     return fit!(RegularizedLinearMixedModel(f, args...; kwargs...); progress, REML, log)
 end
 
+# function StatsBase.deviance(m::RegularizedLinearMixedModel{T}) where {T}
+#     wts = m.sqrtwts
+#     denomdf = T(ssqdenom(m))
+#     σ = something(m.optsum.sigma, pwrss(m.lmm) / denomdf)
+#     val = denomdf * (log2π + 2 * log(σ)) + logdet(m) + pwrss(m) / σ^2
+#     return isempty(wts) ? val : val - T(2.0) * sum(log, wts)
+# end
 
 """
     objective(m::RegularizedLinearMixedModel)
@@ -39,11 +52,17 @@ end
 Return negative twice the log-likelihood of model `m` plus penalty
 """
 function MixedModels.objective(m::RegularizedLinearMixedModel{T}) where {T}
-    # this is useful for fitting given a particular k, but it's not great at finding
-    # which k is best.
+    # this is useful for fitting given a particular k, but it's not good at finding
+    # which k is best
     β = fixef(m.lmm)
+    # need to add beta to search space
     return objective(m.lmm) + 2 * sum(k * p(β) for (k, p) in zip(m.k, m.penalty))
 end
+
+# need to do this like GLMM (no fast=true for now)
+# searchspace is k-beta-theta
+# then use PIRLS to evalute BLUPs?
+# computed pwrss as sum(abs2, response .- fitted) + sum(abs2, ranef(m; uscale=true))^2 + sum(k * p(β) for (k, p) in zip(m.k, m.penalty))
 
 function StatsAPI.fit!(
     m::RegularizedLinearMixedModel{T};

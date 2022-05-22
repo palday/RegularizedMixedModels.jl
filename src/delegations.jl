@@ -1,6 +1,6 @@
 # these should be split into things that take type parameters vs. those that don't
 _delegations = [:(StatsBase.coefnames),
-                :(StatsBase.deviance),
+                # :(StatsBase.deviance),
                 :(StatsBase.loglikelihood),
                 :(LinearAlgebra.cond),
                 :(StatsBase.dof),
