@@ -1,0 +1,4 @@
+name = "RegularizedMixedModels"
+uuid = "c2346229-751b-49c2-b5f4-38050c3cc7be"
+author = ["Phillip Alday <me@phillipalday.com>"]
+version = "0.1.0"
