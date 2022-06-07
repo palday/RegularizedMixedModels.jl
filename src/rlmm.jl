@@ -16,7 +16,7 @@ struct RegularizedLinearMixedModel{T<:AbstractFloat} <: RegularizedMixedModel{T}
 end
 
 const Ridge = Function[Base.Fix2(norm, 2)]
-const Lasso = Function[Base.Fix2(norm, 2)]
+const Lasso = Function[Base.Fix2(norm, 1)]
 const ElasticNet = Function[Base.Fix2(norm, 1), Base.Fix2(norm, 2)]
 
 function RegularizedLinearMixedModel(f::FormulaTerm, tbl, penalty=Ridge, k=ones(Float64, length(penalty)); kwargs...)
